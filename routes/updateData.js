@@ -2,6 +2,7 @@ const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 updateData = async (req) => {
+  let result;
   try {
     let url = `https://api.nomics.com/v1${req.path}`;
 
@@ -11,16 +12,20 @@ updateData = async (req) => {
       (key) => (url += `&${key}=${req.query[key]}`)
     );
 
-    let result = await fetch(url);
-    let json = await result.json();
+    result = await fetch(url);
 
-    // console.log("updateData");
-    return json;
+    if (result.status === 200) {
+      let json = await result.json();
+
+  
+      return json;
+    }
   } catch (e) {
     console.log(e);
-
-    return [];
   }
+  console.log(result.statusText);
+
+  return [];
 };
 
 module.exports = updateData;
