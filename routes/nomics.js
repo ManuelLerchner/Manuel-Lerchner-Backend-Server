@@ -1,36 +1,47 @@
 const express = require("express");
 const router = express.Router();
-const https = require("https");
+const updateData = require("./updateData");
 
-router.get("/*", (req, res) => {
-  try {
-    let requestedPath = req.path;
+const QUERY_WINDOW_s = 60;
+const REFRESH_RATE_s = 10;
 
-    let url = `https://api.nomics.com/v1${requestedPath}`;
+let cachedData = [];
+let clearIntervallFunc = null;
 
-    url += `?key=${process.env.NOMICS_API_KEY}`;
+async function startQueryWindow(req) {
+  //cold start
+  cachedData = await updateData(req);
 
-    Object.keys(req.query).forEach(
-      (key) => (url += `&${key}=${req.query[key]}`)
-    );
+  //start intervall
+  clearIntervallFunc = setInterval(async () => {
+    let newData = await updateData(req);
 
-    https.get(url, (response) => {
-      response
-        .on("data", (chunk) => {
-          res.write(chunk);
-        })
-        .on("error", (error) => {
-          console.log(error);
-          res.send("error");
-        })
-        .on("end", () => {
-          res.end();
-        });
-    });
-  } catch (err) {
-    console.log(err);
-    res.end();
+    //if data looks valid
+    if (newData.length > 0) {
+      cachedData = newData;
+    }
+  }, REFRESH_RATE_s * 1000);
+}
+
+async function stopQueryWindow() {
+  clearInterval(clearIntervallFunc);
+  clearIntervallFunc = null;
+}
+
+router.get("/*", async (req, res) => {
+  //if no query window is active
+  if (!clearIntervallFunc) {
+    await startQueryWindow(req);
+
+    //close query window after QUERY_WINDOW sec
+    setTimeout(async () => {
+      stopQueryWindow();
+    }, QUERY_WINDOW_s * 1000);
+  } else {
+    //console.log("using cached data");
   }
+
+  res.json(cachedData);
 });
 
 module.exports = router;
