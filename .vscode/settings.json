@@ -8,9 +8,9 @@
             "server": "localhost",
             "port": 3306,
             "driver": "MariaDB",
-            "name": "MariaDB",
-            "username": "root",
-            "database": "expenseTracker",
+            "name": "Expense-Tracker",
+            "database": "expensetracker",
+            "username": "Manuel",
             "password": "Lerry"
         }
     ]
