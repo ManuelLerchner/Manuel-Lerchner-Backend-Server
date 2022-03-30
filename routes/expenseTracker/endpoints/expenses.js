@@ -9,21 +9,21 @@ const {
 router.get("/", (req, res) => {
     performDatabaseAction(res, async (conn) => {
         //Authentication
-        let queryResponse = await checkIfAuthenticatedWithToken(
+        let user = await checkIfAuthenticatedWithToken(
             req.query.email,
             req.query.authToken,
             conn,
             res
         );
 
-        if (!queryResponse) {
+        if (!user) {
             return;
         }
 
         //Perform query
         let expenses = await conn.query(
             "SELECT * FROM expenses WHERE user_id = ?",
-            [queryResponse.id]
+            [user.id]
         );
 
         //Send response
@@ -44,14 +44,14 @@ router.get("/", (req, res) => {
 router.put("/update", (req, res) => {
     performDatabaseAction(res, async (conn) => {
         //Authentication
-        let queryResponse = await checkIfAuthenticatedWithToken(
+        let user = await checkIfAuthenticatedWithToken(
             req.body.email,
             req.body.authToken,
             conn,
             res
         );
 
-        if (!queryResponse) {
+        if (!user) {
             return;
         }
 
@@ -60,7 +60,7 @@ router.put("/update", (req, res) => {
         await conn.query(
             "UPDATE expenses SET user_id=?, amount = ?,description = ?, categories = ?, date=? WHERE id = ?",
             [
-                queryResponse.id,
+                user.id,
                 expenseToUpdate.amount,
                 expenseToUpdate.description,
                 expenseToUpdate.categories,
@@ -71,6 +71,66 @@ router.put("/update", (req, res) => {
 
         //Send response
         res.json(expenseToUpdate);
+    });
+});
+
+router.post("/add", (req, res) => {
+    performDatabaseAction(res, async (conn) => {
+        //Authentication
+        let user = await checkIfAuthenticatedWithToken(
+            req.body.email,
+            req.body.authToken,
+            conn,
+            res
+        );
+
+        if (!user) {
+            return;
+        }
+
+        console.log(req.body);
+
+        //Perform query
+        let expenseToAdd = req.body.expenseToAdd;
+        await conn.query(
+            "INSERT INTO expenses (user_id, amount,description, categories, date) VALUES (?, ?, ?, ?, ?)",
+            [
+                user.id,
+                expenseToAdd.amount,
+                expenseToAdd.description,
+                expenseToAdd.categories,
+                expenseToAdd.date,
+            ]
+        );
+
+        //Send response
+        res.json(expenseToAdd);
+    });
+});
+
+router.delete("/delete", (req, res) => {
+    performDatabaseAction(res, async (conn) => {
+        //Authentication
+        let user = await checkIfAuthenticatedWithToken(
+            req.query.email,
+            req.query.authToken,
+            conn,
+            res
+        );
+
+        if (!user) {
+            return;
+        }
+
+        //Perform query
+        await conn.query("DELETE FROM expenses WHERE id = ?", [
+            req.query.idToDelete,
+        ]);
+
+        //Send response
+        res.json({
+            id: req.query.idToDelete,
+        });
     });
 });
 
