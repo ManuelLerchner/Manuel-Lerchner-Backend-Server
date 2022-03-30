@@ -12,4 +12,13 @@ const pool = mariadb.createPool({
     connectionLimit: 15,
 });
 
+pool.getConnection()
+    .then((conn) => {
+        console.log("Connected to mariaDB");
+        conn.release();
+    })
+    .catch((err) => {
+        console.log("Connection error:\n" + err);
+    });
+
 module.exports = pool;

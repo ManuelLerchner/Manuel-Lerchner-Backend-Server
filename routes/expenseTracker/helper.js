@@ -61,7 +61,7 @@ const performDatabaseAction = async function (res, func) {
         await func(conn);
     } catch (err) {
         console.log(err);
-        res.status(500).send("Error");
+        res.status(500).send("Error: " + err.code);
     } finally {
         conn.release();
     }

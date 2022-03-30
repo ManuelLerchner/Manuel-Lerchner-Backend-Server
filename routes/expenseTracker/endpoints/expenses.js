@@ -88,8 +88,6 @@ router.post("/add", (req, res) => {
             return;
         }
 
-        console.log(req.body);
-
         //Perform query
         let expenseToAdd = req.body.expenseToAdd;
         await conn.query(
