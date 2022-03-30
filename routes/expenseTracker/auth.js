@@ -30,10 +30,18 @@ router.post("/login", async (req, res) => {
             return;
         }
 
+        let authToken = crypto.randomBytes(64).toString("hex");
+
+        await conn.query("UPDATE users SET authToken = ? WHERE email = ?", [
+            authToken,
+            email,
+        ]);
+
         res.json({
             id: row.id,
             username: row.username,
             email: row.email,
+            authToken: authToken,
         });
     } catch (err) {
         console.log(err);
@@ -70,6 +78,44 @@ router.post("/register", async (req, res) => {
             res.status(409).send("User already exists");
             return;
         }
+        console.log(err);
+        res.status(500).send("Error");
+    } finally {
+        conn.release();
+    }
+});
+
+router.post("/keep-signed-in", async (req, res) => {
+    let user = req.body.user;
+    let conn = await pool.getConnection();
+
+    try {
+        let [row] = await conn.query("SELECT * FROM users WHERE email = ?", [
+            user.email,
+        ]);
+
+        if (row === undefined) {
+            res.status(401).send("Invalid credentials");
+            return;
+        }
+
+        if (
+            row.id !== user.id ||
+            row.email !== user.email ||
+            row.username !== user.username ||
+            row.authToken !== user.authToken
+        ) {
+            res.status(401).send("Invalid credentials");
+            return;
+        }
+
+        res.json({
+            id: row.id,
+            username: row.username,
+            email: row.email,
+            authToken: row.authToken,
+        });
+    } catch (err) {
         console.log(err);
         res.status(500).send("Error");
     } finally {
