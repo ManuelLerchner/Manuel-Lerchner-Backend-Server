@@ -18,7 +18,7 @@ pool.getConnection()
         conn.release();
     })
     .catch((err) => {
-        console.log("MariaDB Connection error:\n" + err);
+        console.log("MariaDB Connection error: " + err);
     });
 
 module.exports = pool;
