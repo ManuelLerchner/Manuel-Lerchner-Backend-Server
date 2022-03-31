@@ -20,7 +20,7 @@ updateData = async (req) => {
             return json;
         }
     } catch (e) {
-        console.log(e);
+        console.log("Nomics Error: " + e);
     }
     console.log(result.statusText);
 
