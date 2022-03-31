@@ -26,7 +26,7 @@ async function startQueryWindow(req) {
 async function stopQueryWindow() {
     clearInterval(clearIntervallFunc);
     clearIntervallFunc = null;
-    console.log("Query window stopped");
+    console.log("Nomics - Query window stopped");
 }
 
 router.get("/*", async (req, res) => {

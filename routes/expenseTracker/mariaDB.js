@@ -14,11 +14,11 @@ const pool = mariadb.createPool({
 
 pool.getConnection()
     .then((conn) => {
-        console.log("Connected to mariaDB");
+        console.log("Connected to MariaDB");
         conn.release();
     })
     .catch((err) => {
-        console.log("Connection error:\n" + err);
+        console.log("MariaDB Connection error:\n" + err);
     });
 
 module.exports = pool;
