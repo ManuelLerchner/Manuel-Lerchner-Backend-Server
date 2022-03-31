@@ -15,6 +15,7 @@ async function startQueryWindow(req) {
     //start intervall
     clearIntervallFunc = setInterval(async () => {
         let newData = await updateData(req);
+        console.log("Nomics - Data refreshed");
 
         //if data looks valid
         if (newData.length > 0) {
@@ -38,8 +39,10 @@ router.get("/*", async (req, res) => {
         setTimeout(async () => {
             stopQueryWindow();
         }, QUERY_WINDOW_s * 1000);
+
+        console.log("Nomics - Query window started");
     } else {
-        //console.log("using cached data");
+        console.log("Nomics - Using cached data");
     }
 
     res.json(cachedData);

@@ -41,6 +41,8 @@ router.post("/login", (req, res) => {
             email: user.email,
             authToken: authToken,
         });
+
+        console.log(`User ${user.username} logged in`);
     });
 });
 
@@ -68,6 +70,9 @@ router.post("/register", (req, res) => {
                 username: username,
                 email: email,
             });
+
+            console.log(`User ${username} registered`);
+
         } catch (err) {
             //handle duplicate email error
             if (err.code === "ER_DUP_ENTRY") {
@@ -102,6 +107,8 @@ router.post("/keep-signed-in", (req, res) => {
             email: user.email,
             authToken: user.authToken,
         });
+
+        console.log(`User ${user.username} signed in`);
     });
 });
 

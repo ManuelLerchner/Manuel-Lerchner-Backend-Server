@@ -38,6 +38,7 @@ router.get("/", (req, res) => {
                 };
             })
         );
+        console.log(`User ${user.username} fetched expenses`);
     });
 });
 
@@ -71,6 +72,7 @@ router.put("/update", (req, res) => {
 
         //Send response
         res.json(expenseToUpdate);
+        console.log(`User ${user.username} updated expense`);
     });
 });
 
@@ -103,6 +105,7 @@ router.post("/add", (req, res) => {
 
         //Send response
         res.json(expenseToAdd);
+        console.log(`User ${user.username} added expense`);
     });
 });
 
@@ -129,6 +132,7 @@ router.delete("/delete", (req, res) => {
         res.json({
             id: req.query.idToDelete,
         });
+        console.log(`User ${user.username} deleted expense`);
     });
 });
 
