@@ -17,5 +17,5 @@ CREATE TABLE expenses (
     categories TEXT,
     date DATE NOT NULL,
     PRIMARY KEY(id),
-    FOREIGN KEY(user_id) REFERENCES Users(id)
+    FOREIGN KEY(user_id) REFERENCES users(id)
 );
