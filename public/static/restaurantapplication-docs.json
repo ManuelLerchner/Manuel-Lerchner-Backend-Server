@@ -1,0 +1,841 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "EIST 404 API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://virtserver.swaggerhub.com/SHADOWMASTER251102_1/version2/1.0.0",
+      "description": "SwaggerHub API Auto Mocking"
+    },
+    {
+      "url": "/",
+      "description": "EIST 404 API"
+    }
+  ],
+  "tags": [
+    {
+      "name": "restaurants",
+      "description": "Restaurants"
+    },
+    {
+      "name": "reservations",
+      "description": "Reservations"
+    },
+    {
+      "name": "users",
+      "description": "Users"
+    },
+    {
+      "name": "comments",
+      "description": "Comments of restaurants"
+    }
+  ],
+  "paths": {
+    "/restaurant/{id}": {
+      "get": {
+        "tags": [
+          "restaurants"
+        ],
+        "summary": "Get restaurant by id",
+        "description": "Get restaurant by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of the restaurant",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All data of the requested restaurant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Restaurant"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters or restaurant not found"
+          }
+        }
+      }
+    },
+    "/restaurants": {
+      "get": {
+        "tags": [
+          "restaurants"
+        ],
+        "summary": "Get filtered restaurants",
+        "description": "Get filtered restaurants",
+        "parameters": [
+          {
+            "name": "restaurantType",
+            "in": "query",
+            "description": "Type of the restaurant (italian, ...)",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "priceCategory",
+            "in": "query",
+            "description": "Price category of the restaurant (cheap, normal, costly)",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "maxDistance",
+            "in": "query",
+            "description": "Maximum allowed distance to restaurant in km",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "minRating",
+            "in": "query",
+            "description": "Minimum Rating of the restaurant (integer 1-5)",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "listSize",
+            "in": "query",
+            "description": "Amount of restaurants to be requested",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "capacity",
+            "in": "query",
+            "description": "Minimum capacity of a free table in the restaurant",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "userPosition",
+            "in": "query",
+            "description": "Position of the user",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "Date of the expected reservation (\"YYYY-MM-DD\")",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "timeSlot",
+            "in": "query",
+            "description": "Time of the expected reservation",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "First listSize restaurants that match all filter criteria",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Restaurant"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameter"
+          }
+        }
+      }
+    },
+    "/restaurants/getSuitableTables": {
+      "get": {
+        "tags": [
+          "restaurants"
+        ],
+        "summary": "Get tableState",
+        "description": "Get state (free, reserved) of all table in the restaurant at the specified timeslot",
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "in": "query",
+            "description": "Id of the restaurant",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfPersons",
+            "in": "query",
+            "description": "Minimum capacity of the table",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxDistance",
+            "in": "query",
+            "description": "Maximum allowed distance to restaurant in km",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "Date of the expected reservation (\"YYYY-MM-DD\")",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "timeSlot",
+            "in": "query",
+            "description": "TimeSlot of the reservation",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of tables with their states (true=free, false=reserved)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/restaurants/addComment": {
+      "post": {
+        "tags": [
+          "comments"
+        ],
+        "summary": "Add comment to restaurant",
+        "description": "Add comment to restaurant",
+        "requestBody": {
+          "description": "data of the comment to insert",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Comment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Comment inserted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/updateComment": {
+      "put": {
+        "tags": [
+          "comments"
+        ],
+        "summary": "Update comment",
+        "description": "Update comment",
+        "requestBody": {
+          "description": "Data of the comment to update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Comment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Comment updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/deleteComment": {
+      "delete": {
+        "tags": [
+          "comments"
+        ],
+        "summary": "Delete comment",
+        "description": "Delete comment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "id of the comment",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comment deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getReservations": {
+      "get": {
+        "tags": [
+          "reservations"
+        ],
+        "summary": "Get reservations",
+        "description": "Get all reservations of the specified user",
+        "parameters": [
+          {
+            "name": "authToken",
+            "in": "query",
+            "description": "authToken of the user",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all reservations of the specified user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Reservation"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reserveTable": {
+      "post": {
+        "tags": [
+          "reservations"
+        ],
+        "summary": "Reserve table",
+        "description": "Create reservation for a specified table in a specific restaurant",
+        "requestBody": {
+          "description": "required information of the reservation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReservationInformation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Table reserved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cancelReservation": {
+      "delete": {
+        "tags": [
+          "reservations"
+        ],
+        "summary": "Cancel reservation",
+        "description": "Cancel reservation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "id of the reservation",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reservation cancelled"
+          },
+          "400": {
+            "description": "Invalid parameters"
+          }
+        }
+      }
+    },
+    "/confirmReservation": {
+      "put": {
+        "tags": [
+          "reservations"
+        ],
+        "summary": "Confirm reservation",
+        "description": "Confirm reservation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "id of the reservation",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reservation confirmed"
+          },
+          "400": {
+            "description": "Invalid parameters"
+          }
+        }
+      }
+    },
+    "/signUp": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Signup new user",
+        "description": "Signup new user",
+        "requestBody": {
+          "description": "Required information of the user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Email, password, Username",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters"
+          }
+        }
+      }
+    },
+    "/login": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Login new user",
+        "description": "Login new user",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "email of the user",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "password of the user",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email, Username, AuthToken",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/loginWithAuthToken": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Login user using authToken",
+        "description": "Login user using authToken",
+        "parameters": [
+          {
+            "name": "authToken",
+            "in": "query",
+            "description": "authToken of the user",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email, password, Username",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Restaurant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "restaurantType": {
+            "type": "string"
+          },
+          "priceCategory": {
+            "maximum": 3,
+            "minimum": 1,
+            "type": "number",
+            "format": "int"
+          },
+          "averageRating": {
+            "maximum": 5,
+            "minimum": 1,
+            "type": "number",
+            "format": "double"
+          },
+          "location": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          "comments": {
+            "$ref": "#/components/schemas/Restaurant"
+          },
+          "openingTimes": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          "pictures": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "distanceToUser": {
+            "type": "number",
+            "format": "double"
+          },
+          "restaurantTables": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "layoutId": {
+            "type": "number",
+            "format": "integer"
+          },
+          "commentCount": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "ReservationInformation": {
+        "type": "object",
+        "properties": {
+          "authToken": {
+            "type": "string"
+          },
+          "restaurantId": {
+            "type": "number",
+            "format": "long"
+          },
+          "tableNumber": {
+            "type": "number",
+            "format": "long"
+          },
+          "date": {
+            "type": "string",
+            "format": "YYYY-MM-DD"
+          },
+          "timeSlot": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        }
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "headline": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "rating": {
+            "maximum": 5,
+            "minimum": 1,
+            "type": "number"
+          },
+          "restaurant": {
+            "$ref": "#/components/schemas/Restaurant"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "authToken": {
+            "type": "string"
+          },
+          "comments": {
+            "$ref": "#/components/schemas/Restaurant"
+          },
+          "reservations": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "Reservation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "dateTimeSlot": {
+            "$ref": "#/components/schemas/Reservation_dateTimeSlot"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "restaurantTable": {
+            "type": "object"
+          },
+          "confirmed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Reservation_dateTimeSlot": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "YYYY-MM-DD"
+          },
+          "timeSlot": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        },
+        "example": null
+      }
+    }
+  }
+}
