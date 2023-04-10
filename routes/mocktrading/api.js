@@ -30,7 +30,7 @@ async function stopQueryWindow() {
     console.log("Nomics - Query window stopped");
 }
 
-router.get("/*", async (req, res) => {
+router.get("/api", async (req, res) => {
     //if no query window is active
     if (!clearIntervallFunc) {
         await startQueryWindow(req);

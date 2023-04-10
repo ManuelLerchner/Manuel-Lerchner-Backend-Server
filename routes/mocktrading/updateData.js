@@ -4,21 +4,24 @@ const fetch = (...args) =>
 updateData = async (req) => {
     let result;
     try {
-        let url = `https://api.nomics.com/v1${req.path}`;
+        //get id from req
+        // id is array of strings
+        const tokens = req.query.ids.split(',');
 
-        url += `?key=${process.env.NOMICS_API_KEY}`;
+        //get data from nomics
+        const results = await Promise.all(tokens.map(async (token) => {
+            const url = `https://api.coinstats.app/public/v1/coins/${token}?currency=EUR`
+            const result = await fetch(url);
+            if (result.status === 200) {
+                let json = await result.json();
+                return json["coin"]
+            }
+        }));
 
-        Object.keys(req.query).forEach(
-            (key) => (url += `&${key}=${req.query[key]}`)
-        );
+        result = results.filter((result) => result !== undefined);
 
-        result = await fetch(url);
+        return result;
 
-        if (result.status === 200) {
-            let json = await result.json();
-
-            return json;
-        }
     } catch (e) {
         console.log("Nomics Error: " + e);
     }

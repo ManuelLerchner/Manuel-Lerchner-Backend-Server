@@ -12,7 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.static("public"));
 
-app.use("/nomics", require("./routes/mocktrading/nomics"));
+app.use("/mocktrading", require("./routes/mocktrading/api"));
 app.use("/expensetracker", require("./routes/expenseTracker/expensetracker"));
 
 const server = app.listen(process.env.PORT, () =>
