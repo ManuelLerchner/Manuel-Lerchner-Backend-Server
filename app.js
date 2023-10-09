@@ -13,6 +13,7 @@ app.use(cors());
 app.use(express.static("public"));
 
 app.use("/mocktrading", require("./routes/mocktrading/api"));
+app.use("/airquality", require("./routes/airquality/api"));
 app.use("/expensetracker", require("./routes/expenseTracker/expensetracker"));
 
 const server = app.listen(process.env.PORT, () =>
