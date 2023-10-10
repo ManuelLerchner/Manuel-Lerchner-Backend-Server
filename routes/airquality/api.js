@@ -1,9 +1,15 @@
 const express = require("express");
 const router = express.Router();
 
-const { MongoClient } = require("mongodb");
+const { MongoClient, ClientEncryption } = require("mongodb");
 
 const client = new MongoClient(process.env.MONGODB_URI);
+
+client.connect();
+
+client.on("connectionReady", (event) => {
+  console.log("Connected to MongoDB");
+});
 
 router.get("/api", async (req, res) => {
   const from = req.query.from;
