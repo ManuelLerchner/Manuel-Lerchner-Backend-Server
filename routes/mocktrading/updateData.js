@@ -10,11 +10,19 @@ updateData = async (req) => {
 
         //get data from nomics
         const results = await Promise.all(tokens.map(async (token) => {
-            const url = `https://api.coinstats.app/public/v1/coins/${token}?currency=EUR`
-            const result = await fetch(url);
+            const url = `https://openapiv1.coinstats.app/coins/${token}?currency=EUR`;
+        
+            const result = await fetch(url, {
+                method: "GET",
+                headers: {
+                accept: "application/json",
+                "X-API-KEY": process.env.COINSTATS_API_KEY,
+                },
+            });
+    
             if (result.status === 200) {
                 let json = await result.json();
-                return json["coin"]
+                return json;
             }
         }));
 
