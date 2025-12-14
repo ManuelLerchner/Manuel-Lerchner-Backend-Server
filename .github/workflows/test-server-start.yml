@@ -1,0 +1,97 @@
+name: Test Server Start
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  test-server-start:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Create test environment file
+      run: |
+        mkdir -p dotenv
+        cat > dotenv/.env << 'EOF'
+        # Server Configuration
+        PORT=3000
+        
+        # MongoDB Configuration (mock for testing)
+        MONGODB_URI=mongodb://localhost:27017/test_database
+        
+        # MariaDB Configuration (mock for testing)
+        DB_HOST=localhost
+        DB_USER=test_user
+        DB_PASS=test_password
+        DB_NAME=test_database
+        
+        # API Keys (mock for testing)
+        COINSTATS_API_KEY=test_api_key
+        EOF
+        
+    - name: Start server and test
+      run: |
+        # Start server in background
+        npm start &
+        SERVER_PID=$!
+        echo "Server PID: $SERVER_PID"
+        
+        # Wait for server to start
+        echo "Waiting for server to start on port 3000..."
+        SERVER_STARTED=false
+        for i in {1..30}; do
+          if curl -s http://localhost:3000 > /dev/null 2>&1 || \
+             ss -tuln 2>/dev/null | grep -q ":3000 " || \
+             netstat -tuln 2>/dev/null | grep -q ":3000 "; then
+            echo "Server is running!"
+            SERVER_STARTED=true
+            break
+          fi
+          echo "Attempt $i: Server not ready yet, waiting..."
+          sleep 1
+        done
+        
+        # Check if server started successfully
+        if [ "$SERVER_STARTED" = false ]; then
+          echo "Server failed to start within 30 seconds"
+          kill $SERVER_PID 2>/dev/null || true
+          exit 1
+        fi
+        
+        # Verify server is responding
+        if ss -tuln 2>/dev/null | grep -q ":3000 " || \
+           netstat -tuln 2>/dev/null | grep -q ":3000 "; then
+          echo "✓ Server is listening on port 3000"
+        else
+          echo "✗ Server is not listening on port 3000"
+          kill $SERVER_PID 2>/dev/null || true
+          exit 1
+        fi
+        
+        # Stop server gracefully
+        echo "Stopping server..."
+        kill $SERVER_PID 2>/dev/null || true
+        sleep 2
+        
+        # Force kill if still running
+        if kill -0 $SERVER_PID 2>/dev/null; then
+          echo "Force killing server..."
+          kill -9 $SERVER_PID 2>/dev/null || true
+        fi
+        
+        echo "✓ Server test completed successfully!"
