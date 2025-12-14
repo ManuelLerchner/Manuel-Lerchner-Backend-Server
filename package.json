@@ -9,7 +9,7 @@
         "mongodb": "^6.1.0",
         "node-fetch": "^3.2.10",
         "socket.io": "^4.8.1",
-        "uuid": "^13.0.0"
+        "uuid": "^9.0.1"
     },
     "scripts": {
         "start": "node app.js",
