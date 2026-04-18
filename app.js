@@ -15,6 +15,9 @@ app.use(express.static("public"));
 app.use("/mocktrading", require("./routes/mocktrading/api"));
 app.use("/airquality", require("./routes/airquality/api"));
 app.use("/expensetracker", require("./routes/expenseTracker/expensetracker"));
+app.get("/", (_req, res) => {
+    res.status(200).send("Backend API is running.");
+});
 
 const server = app.listen(process.env.PORT, () =>
     console.log(`Server listening on port ${process.env.PORT}`)
